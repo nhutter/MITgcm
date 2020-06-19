@@ -150,6 +150,8 @@ C     Get values of climatological fields.
 # ifdef ALLOW_ATM_TEMP
 CADJ STORE precip0     = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE precip1     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE runoff0     = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE runoff1     = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE snowprecip0 = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE snowprecip1 = comlev1, key=ikey_dynamics, kind=isbyte
 # endif

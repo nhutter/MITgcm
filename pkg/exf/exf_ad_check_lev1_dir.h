@@ -24,6 +24,8 @@ CADJ STORE atemp0    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE atemp1    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE precip0   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE precip1   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE runoff0   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE runoff1   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE lwflux0   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE lwflux1   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE swflux0   = comlev1, key=ikey_dynamics, kind=isbyte

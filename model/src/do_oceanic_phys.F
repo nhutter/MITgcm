@@ -338,6 +338,7 @@ CADJ STORE salt,theta        = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE uvel,vvel         = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE qnet,qsw, empmr   = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE atemp,aqh,precip  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE runoff            = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE swdown,lwdown     = comlev1, key=ikey_dynamics, kind=isbyte
 #  ifdef NONLIN_FRSURF
 CADJ STORE hFac_surfC        = comlev1, key=ikey_dynamics, kind=isbyte
@@ -379,6 +380,7 @@ CADJ STORE fu,fv    = comlev1, key=ikey_dynamics, kind=isbyte
 cph-adj-test)
 #ifdef ALLOW_EXF
 CADJ STORE atemp,aqh,precip  = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE runoff            = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE swdown,lwdown     = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE uwind,vwind       = comlev1, key=ikey_dynamics, kind=isbyte
 #endif

@@ -1455,6 +1455,7 @@ C =================================================
 #ifdef ALLOW_AUTODIFF_TAMC
 CADJ STORE a_QbyATM_cover = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE PRECIP(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE RUNOFF(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE AREApreTH = comlev1_bibj,key=iicekey,byte=isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
         IF ( snowPrecipFile .NE. ' ' ) THEN

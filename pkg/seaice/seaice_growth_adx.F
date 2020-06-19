@@ -533,6 +533,7 @@ CADJ STORE SnowAccOverIce     = comlev1_bibj,key=iicekey,byte=isbyte
 CADJ STORE PrecipRateOverIceSurfaceToSea   =
 CADJ &     comlev1_bibj, key = iicekey, byte = isbyte
 CADJ STORE PRECIP(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte
+CADJ STORE RUNOFF(:,:,bi,bj) = comlev1_bibj,key=iicekey,byte=isbyte        
 CADJ STORE AREApreTH = comlev1_bibj, key = iicekey, byte = isbyte
 #endif /* ALLOW_AUTODIFF_TAMC */
 C---+----1----+----2----+----3----+----4----+----5----+----6----+----7-|--+----|
