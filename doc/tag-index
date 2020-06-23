@@ -1,6 +1,12 @@
     Notes on tags used in MITgcmUV
     ==============================
 
+checkpoint67r (2020/06/04)
+o pkg/ecco:
+  - fix character length when checking for m_trHeat, m_trSalt & m_horflux_vol.
+o pkg/autodiff:
+  - add active read and write routines for global 1D vectors, to be used for
+    compressed cost function vectors (note: not used yet, example to come soon).
 o model/src & pkg/exf:
   - Reference atmospheric pressure for seawater EOS was assumed but was not
     explicitly set. New constant "eosRefP0" is added to make this more clear ;
