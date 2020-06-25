@@ -423,11 +423,13 @@ C ----- begin iteration  -----
 C
        IF ( useBlkFlx ) THEN
 #else
+# ifdef ALLOW_AUTODIFF_TAMC
           kkey = (ticekey-1)*MaxTsf + k
 CADJ STORE iceflag = comlev1_thsice_s4t, key=kkey, byte=isbyte
 CADJ STORE hSnow1  = comlev1_thsice_s4t, key=kkey, byte=isbyte
 CADJ STORE tsf     = comlev1_thsice_s4t, key=kkey, byte=isbyte
 CADJ STORE dEvdT   = comlev1_thsice_s4t, key=kkey, byte=isbyte
+# endif /* ALLOW_AUTODIFF_TAMC */
 #endif /* ALLOW_AUTODIFF */
 
 C--   Compute top surface flux.

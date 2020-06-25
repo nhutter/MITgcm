@@ -33,7 +33,11 @@ c ad dump record number (used only if dumpAdByRec is true)
       PARAMETER (NDV2D  = 22)
       PARAMETER (NEXF1  = 23)
       PARAMETER (NEXF2  = 24)
+#ifdef ALLOW_RUNOFF_CONTROL
+      PARAMETER (NCTRL1 = 22)
+#else
       PARAMETER (NCTRL1 = 20)
+#endif
       PARAMETER (NOB = 20)
       PARAMETER (NSI = 19)
       _RL StoreDynVars3D
@@ -68,4 +72,3 @@ c ad dump record number (used only if dumpAdByRec is true)
      &       StoreOBCSW
       COMMON /AUTODIFF_STORE_SEAICE/
      &       StoreSEAICE
-
