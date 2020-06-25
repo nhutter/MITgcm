@@ -22,3 +22,4 @@ thsice_map_exf.f
 thsice_solve4temp.f
 thsice_step_fwd.f
 thsice_step_temp.f
+thsice_salt_plume.f
