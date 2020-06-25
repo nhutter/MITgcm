@@ -58,6 +58,11 @@ CADJ STORE swflux1   = comlev1, key=ikey_dynamics, kind=isbyte
 
 # endif /* ALLOW_ATM_TEMP */
 
+# ifdef ALLOW_RUNOFF
+CADJ STORE runoff0   = comlev1, key=ikey_dynamics, kind=isbyte
+CADJ STORE runoff1   = comlev1, key=ikey_dynamics, kind=isbyte
+# endif /* ALLOW_RUNOFF */
+
 CADJ STORE uwind0    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE uwind1    = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE vwind0    = comlev1, key=ikey_dynamics, kind=isbyte

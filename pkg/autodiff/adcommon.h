@@ -138,9 +138,7 @@ c     _RL adgt(1-olx:snx+olx,1-oly:sny+oly,nr,nsx,nsy)
 
 # ifdef ALLOW_RUNOFF
       _RL adrunoff    (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL adrunoff0   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      _RL adrunoff1   (1-olx:snx+olx,1-oly:sny+oly,nsx,nsy)
-      common /exfl_runoff_r_ad/ adrunoff, adrunoff0, adrunoff1
+      common /exf_runoff_r_ad/ adrunoff
 # endif
 
 # ifdef ALLOW_ATM_TEMP
