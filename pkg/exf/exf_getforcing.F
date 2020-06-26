@@ -153,10 +153,6 @@ CADJ STORE precip1     = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE snowprecip0 = comlev1, key=ikey_dynamics, kind=isbyte
 CADJ STORE snowprecip1 = comlev1, key=ikey_dynamics, kind=isbyte
 # endif
-# ifdef ALLOW_RUNOFF
-CADJ STORE runoff0     = comlev1, key=ikey_dynamics, kind=isbyte
-CADJ STORE runoff1     = comlev1, key=ikey_dynamics, kind=isbyte
-# endif /* ALLOW_RUNOFF */
 #endif
 C     Get the surface forcing fields.
       CALL EXF_GETFFIELDS( myTime, myIter, myThid )
