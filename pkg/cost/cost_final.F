@@ -101,6 +101,11 @@ cgf : to compile previous line user is expected to provide cost_hflux.F
 cgf : to compile previous line user is expected to provide cost_temp.F
 #endif
 
+#ifdef ALLOW_COST_MEAN_SALT
+      CALL COST_MEAN_SALT (myThid)
+cnh : to compile previous line user is expected to provide cost_mean_salt.F
+#endif
+
       write(msgBuf,'(A,D22.15)') '  early fc = ', fc
       call print_message( msgBuf, standardmessageunit,
      &                    SQUEEZE_RIGHT , mythid)
@@ -136,6 +141,11 @@ c--   Sum up all contributions.
           write(standardmessageunit,'(A,D22.15)')
      &         ' --> objf_transport(bi,bj) = ', objf_transport(bi,bj)
 #endif
+#ifdef ALLOW_COST_MEAN_SALT
+          write(standardmessageunit,'(A,D22.15)')
+     &         ' --> objf_mean_salt(bi,bj)   = ',
+     &         objf_mean_salt(bi,bj)
+#endif
 
          tile_fc(bi,bj) = tile_fc(bi,bj)
 #ifdef ALLOW_COST_TEST
@@ -157,6 +167,9 @@ c--   Sum up all contributions.
 #endif
 #ifdef ALLOW_COST_HFLUXM
      &            + mult_hflux_tut * objf_hflux_tut(bi,bj)
+#endif
+#ifdef ALLOW_COST_MEAN_SALT
+     &            + mult_mean_salt  * objf_mean_salt(bi,bj)
 #endif
 
 #ifdef ALLOW_PROFILES
