@@ -149,11 +149,12 @@ cHFLUXM_CONTROL
 
 #ifdef ALLOW_COST
       COMMON /COST_MEAN_R/
-     &                     cMeanTheta, cMeanUVel, cMeanVVel,
+     &                     cMeanTheta, cMeanSalt, cMeanUVel, cMeanVVel,
      &                     cMeanThetaUVel, cMeanThetaVVel
       _RL cMeanTheta(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL cMeanUVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
-      _RL cMeanVVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL cMeanSalt (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL cMeanUVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
+      _RL cMeanVVel (1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL cMeanThetaUVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
       _RL cMeanThetaVVel(1-OLx:sNx+OLx,1-OLy:sNy+OLy,Nr,nSx,nSy)
 #endif
@@ -161,4 +162,3 @@ cHFLUXM_CONTROL
 c     ==================================================================
 c     END OF HEADER COST
 c     ==================================================================
-
