@@ -57,6 +57,9 @@ cHFLUXM_CONTROL
      &               ,objf_hflux_tut
      &               ,objf_temp_tut
 cHFLUXM_CONTROL
+#ifdef ALLOW_COST_MEAN_SALT
+     &               ,objf_mean_salt
+#endif
 
       _RL  objf_atl  (nsx,nsy)
       _RL  objf_test (nsx,nsy)
@@ -74,6 +77,9 @@ cHFLUXM_CONTROL
       _RL  objf_hflux_tut (nsx,nsy)
       _RL  objf_temp_tut (nsx,nsy)
 cHFLUXM_CONTROL
+#ifdef ALLOW_COST_MEAN_SALT
+      _RL  objf_mean_salt (nsx,nsy)
+#endif
 
       common /cost_param_r/
      &                lastinterval
@@ -104,16 +110,19 @@ cph      _RL  objf_state_final (snx,sny,nsx,nsy)
      &                    multUvel,
      &                    multVvel,
 #ifdef ALLOW_COST_TRANSPORT
-     &           mult_transport,
+     &                    mult_transport,
 #endif
 #ifdef ALLOW_COST_DEPTH
-     &           mult_depth,
+     &                    mult_depth,
 #endif
      &                    multEtan
 cHFLUXM_CONTROL
      &                   ,mult_hflux_tut
      &                   ,mult_temp_tut
 cHFLUXM_CONTROL
+#ifdef ALLOW_COST_MEAN_SALT
+     &                   ,mult_mean_salt
+#endif
 
       _RL  mult_atl
       _RL  mult_test
@@ -136,6 +145,9 @@ cHFLUXM_CONTROL
       _RL  mult_hflux_tut
       _RL  mult_temp_tut
 cHFLUXM_CONTROL
+#ifdef ALLOW_COST_MEAN_SALT
+      _RL  mult_mean_salt
+#endif
 
 #ifdef ALLOW_COST_TEST
       common /cost_test_i/
