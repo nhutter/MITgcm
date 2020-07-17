@@ -65,7 +65,7 @@ C--   Calculate cost function on tile of this instance
      &                 /2.*vvel(i,j,k,bi,bj)
      &                 *maskS(i,j,k,bi,bj)*maskC(i,j,k,bi,bj)
      &                 /lastinterval*deltaTClock
-                
+
                 cMeanSalt(i,j,k,bi,bj) = cMeanSalt(i,j,k,bi,bj)
      &                + salt(i,j,k,bi,bj)
      &                /lastinterval*deltaTClock

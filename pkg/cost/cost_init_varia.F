@@ -73,6 +73,7 @@ c
             do j=1,sNy
               do i=1,sNx
                 cMeanTheta(i,j,k,bi,bj) = 0. _d 0
+                cMeanSalt(i,j,k,bi,bj)  = 0. _d 0
                 cMeanUVel(i,j,k,bi,bj)  = 0. _d 0
                 cMeanVVel(i,j,k,bi,bj)  = 0. _d 0
                 cMeanThetaUVel(i,j,k,bi,bj) = 0. _d 0

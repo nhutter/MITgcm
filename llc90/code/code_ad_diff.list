@@ -1,2 +1,3 @@
 cost_temp.f
 cost_hflux.f
+cost_mean_salt.f
