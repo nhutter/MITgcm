@@ -43,47 +43,35 @@ C  Total number of wet temperature point
       tmp  = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1,sNy
-           DO i=1,sNx
-              IF ( mask_arc_oc(i,j,bi,bj).GT.0. ) THEN
-                 DO k=1, Nk
-                    IF ( cMeanSalt(i,j,k,bi,bj).LT.35. ) THEN
-                       tmp = tmp + maskC(i,j,k,bi,bj)*
-     &                      hFacC(i,j,k,bi,bj)*rA(i,j,bi,bj)
-                    ENDIF
-                 ENDDO
-              ENDIF
+        locfc = 0. _d 0
+        DO j=1,sNy
+         DO i=1,sNx
+          IF ( mask_arc_oc(i,j,bi,bj).GT.0. ) THEN
+           DO k=1, Nk
+            print*, 'mean salinity: ',cMeanSalt(i,j,k,bi,bj)
+            IF ( cMeanSalt(i,j,k,bi,bj).LT.35. ) THEN
+             tmp = tmp + drF(k)*hFacC(i,j,k,bi,bj)*rA(i,j,bi,bj)
+             locfc = locfc +
+     &            drF(k)*hFacC(i,j,k,bi,bj)*rA(i,j,bi,bj)*
+     &            cMeanSalt(i,j,k,bi,bj)
+             print*, 'salinity smaller 35'
+             print*, 'mean of tile:',locfc
+            ENDIF
            ENDDO
-          ENDDO
+          ENDIF
+         ENDDO
+        ENDDO
+        objf_mean_salt(bi,bj) = locfc
        ENDDO
       ENDDO
+
       _GLOBAL_SUM_RL( tmp , myThid )
       IF ( tmp.GT.0. ) tmp = 1. _d 0 / tmp
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-
-          locfc = 0. _d 0
-          DO j=1,sNy
-           DO i=1,sNx
-              IF ( mask_arc_oc(i,j,bi,bj).GT.0. ) THEN
-                 DO k=1, Nk
-                    print*, 'mean salinity: ',cMeanSalt(i,j,k,bi,bj)
-                    IF ( cMeanSalt(i,j,k,bi,bj).LT.35. ) THEN
-                       locfc = locfc + tmp*maskC(i,j,k,bi,bj)*
-     &                      hFacC(i,j,k,bi,bj)*rA(i,j,bi,bj)*
-     &                      cMeanSalt(i,j,k,bi,bj)
-                       print*, 'salinity smaller 35'
-                       print*, 'mean of tile:',locfc
-                    ENDIF
-                 ENDDO
-              ENDIF
-           ENDDO
-          ENDDO
-
-          objf_mean_salt(bi,bj) = locfc
-c         print*,'objf_mean_salt =',locfc,startTime,endTime,tmp
-
+        objf_mean_salt(bi,bj) = objf_mean_salt(bi,bj)*tmp
+c        print*,'objf_mean_salt =',locfc,startTime,endTime,tmp
        ENDDO
       ENDDO
 
