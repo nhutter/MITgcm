@@ -30,7 +30,7 @@ C     ========= Local variables =========================
       INTEGER i, j, k
       INTEGER bi, bj
       INTEGER Nk
-      _RL locfc,tmp
+      _RL locfc,tmp,volwght
       _RL mask_arc_oc(1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
       Nk = 2
@@ -43,47 +43,36 @@ C  Total number of wet temperature point
       tmp  = 0. _d 0
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-          DO j=1,sNy
-           DO i=1,sNx
-              IF ( mask_arc_oc(i,j,bi,bj).GT.0. ) THEN
-                 DO k=1, Nk
-                    IF ( cMeanSalt(i,j,k,bi,bj).LT.35. ) THEN
-                       tmp = tmp + maskC(i,j,k,bi,bj)*
-     &                      hFacC(i,j,k,bi,bj)*rA(i,j,bi,bj)
-                    ENDIF
-                 ENDDO
-              ENDIF
-           ENDDO
+        locfc = 0. _d 0
+        DO k=1, Nk 
+         DO j=1,sNy
+          DO i=1,sNx
+           print*, 'mean salinity: ',cMeanSalt(i,j,k,bi,bj)
+           volwght = drF(k)*hFacC(i,j,k,bi,bj)*rA(i,j,bi,bj)*
+     &          mask_arc_oc(i,j,bi,bj)*
+     &          (1-1/(1+exp(-20*(cMeanSalt(i,j,k,bi,bj)-35))))
+           tmp = tmp + volwght
+           locfc = locfc + volwght*
+     &          cMeanSalt(i,j,k,bi,bj)
+           print*, 'arctic coean mask:', mask_arc_oc(i,j,bi,bj)
+           print*, 'logistic equation:'
+           print*, (1-1/(1+exp(-20*(cMeanSalt(i,j,k,bi,bj)-35))))
+           print*, 'weighted volume', volwght
+           print*, 'mean of tile:',locfc
           ENDDO
+         ENDDO
+        ENDDO
+        objf_mean_salt(bi,bj) = locfc
        ENDDO
       ENDDO
+
       _GLOBAL_SUM_RL( tmp , myThid )
       IF ( tmp.GT.0. ) tmp = 1. _d 0 / tmp
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
-
-          locfc = 0. _d 0
-          DO j=1,sNy
-           DO i=1,sNx
-              IF ( mask_arc_oc(i,j,bi,bj).GT.0. ) THEN
-                 DO k=1, Nk
-                    print*, 'mean salinity: ',cMeanSalt(i,j,k,bi,bj)
-                    IF ( cMeanSalt(i,j,k,bi,bj).LT.35. ) THEN
-                       locfc = locfc + tmp*maskC(i,j,k,bi,bj)*
-     &                      hFacC(i,j,k,bi,bj)*rA(i,j,bi,bj)*
-     &                      cMeanSalt(i,j,k,bi,bj)
-                       print*, 'salinity smaller 35'
-                       print*, 'mean of tile:',locfc
-                    ENDIF
-                 ENDDO
-              ENDIF
-           ENDDO
-          ENDDO
-
-          objf_mean_salt(bi,bj) = locfc
-c         print*,'objf_mean_salt =',locfc,startTime,endTime,tmp
-
+        objf_mean_salt(bi,bj) = objf_mean_salt(bi,bj)*tmp
+c        print*,'objf_mean_salt =',locfc,startTime,endTime,tmp
        ENDDO
       ENDDO
 
