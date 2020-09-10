@@ -492,6 +492,9 @@ C  Harmonic on Div.u points
      &          *viscFacAdj
 #endif
 #endif
+CNH #ifdef ALLOW_AUTODIFF
+CNH          Alin=Alin*viscFacAdj
+CNH #endif
          viscAh_DMin(i,j)=MAX(viscAhGridMin*L2rdt,Uscl)
          viscAh_D(i,j)=MAX(viscAh_DMin(i,j),Alin)
          viscAh_DMax(i,j)=MIN(viscAhGridMax*L2rdt,viscAhMax)
@@ -506,6 +509,9 @@ C  BiHarmonic on Div.u points
      &          *viscFacAdj
 #endif
 #endif
+CNH #ifdef ALLOW_AUTODIFF
+CNH          Alin=Alin*viscFacAdj
+CNH #endif
          viscA4_DMin(i,j)=MAX(viscA4GridMin*L4rdt,U4scl)
          viscA4_D(i,j)=MAX(viscA4_DMin(i,j),Alin)
          viscA4_DMax(i,j)=MIN(viscA4GridMax*L4rdt,viscA4Max)
