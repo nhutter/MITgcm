@@ -109,10 +109,10 @@ C--   now set up ice pressure and viscosities
           tmpscal1=MAX(HEFF(i,j,bi,bj)/SEAICEpresH0,ZERO)
           tmpscal2=SEAICEpresH0*(tmpscal1**SEAICEpresPow1)
          ELSE
-          tmpscal2=HEFF(i,j,bi,bj)
+          tmpscal2=HEFFMN(i,j,bi,bj)
          ENDIF
          PRESS0(I,J,bi,bj)=SEAICE_strength*tmpscal2
-     &        *EXP(-SEAICE_cStar*(SEAICE_area_max-AREA(i,j,bi,bj)))
+     &        *EXP(-SEAICE_cStar*(SEAICE_area_max-AREAMN(i,j,bi,bj)))
          ZMAX(I,J,bi,bj)  = SEAICE_zetaMaxFac*PRESS0(I,J,bi,bj)
          ZMIN(I,J,bi,bj)  = SEAICE_zetaMin
          PRESS0(I,J,bi,bj)= PRESS0(I,J,bi,bj)*HEFFM(I,J,bi,bj)

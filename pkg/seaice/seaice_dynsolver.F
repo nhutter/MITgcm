@@ -67,6 +67,12 @@ C     bi,bj  :: tile counters
       INTEGER i, j, bi, bj
       _RL phiSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL mask_uice, mask_vice
+      INTEGER l, m, n, lMin, lMax, mMin, mMax
+      INTEGER iMin, iMax, jMin, jMax
+      _RL tmpscal3 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL tmpscal4 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL tmpscal5
+
 
 C Initialise local variables in common block
       IF ( myIter.EQ.nIter0 ) THEN
@@ -212,6 +218,74 @@ C--   interface of dynamics with atmopheric forcing fields (wind/stress)
      I     uIce, vIce, AREA, SIMaskU, SIMaskV,
      O     TAUX, TAUY,
      I     myTime, myIter, myThid )
+
+CNH   Smoothening of concentration and thickness fields for the ice strenght computation
+C     loop boundaries
+      iMin=1-OLx
+      iMax=sNx+OLx
+      jMin=1-OLy
+      jMax=sNy+OLy
+
+      
+      DO n=1,5
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           tmpscal3(i,j,bi,bj)=0. _d 0
+           tmpscal4(i,j,bi,bj)=0. _d 0
+           tmpscal5=0. _d 0
+           lMin=MAX(iMin-i,-4)
+           lMax=MIN(iMax-i,4)
+           mMin=MAX(jMin-j,-4)
+           mMax=MIN(jMax-j,4)
+C         print*,'loop parameters i',bi,bj,i,lMin,lMax,iMin,iMax
+C         print*,'loop parameters j',bi,bj,j,mMin,mMax,jMin,jMax
+           DO l=lMin,lMax
+            DO m=mMin,mMax
+             tmpscal3(i,j,bi,bj)=tmpscal3(i,j,bi,bj)+HEFF(i+l,j+m,bi,bj)
+             tmpscal4(i,j,bi,bj)=tmpscal4(i,j,bi,bj)+AREA(i+l,j+m,bi,bj)
+             tmpscal5=tmpscal5 + 1. _d 0
+C           IF (i.EQ.1) THEN
+C            IF (j.EQ.1) THEN
+C             print*,'seaice loop thickness',tmpscal3,
+C     &          HEFF(i+l,j+m,bi,bj),l,m
+C             print*,'seaice loop concentration',tmpscal4,
+C     &          AREA(i+l,j+m,bi,bj),l,m
+C            ENDIF
+C           ENDIF
+            ENDDO     
+           ENDDO
+           tmpscal3(i,j,bi,bj)=tmpscal3(i,j,bi,bj)/tmpscal5
+           tmpscal4(i,j,bi,bj)=tmpscal4(i,j,bi,bj)/tmpscal5
+           tmpscal3(i,j,bi,bj)=MAX(tmpscal3(i,j,bi,bj),HEFF(i,j,bi,bj))
+           tmpscal4(i,j,bi,bj)=MAX(tmpscal4(i,j,bi,bj),AREA(i,j,bi,bj))
+           IF (tmpscal4(i,j,bi,bj).GT.1) THEN
+            print*,'WARNING Averaging lead to area lager 1',i,j,
+     &           tmpscal4,tmpscal5
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=jMin,jMax
+          DO i=iMin,iMax
+           AREAMN(i,j,bi,bj)=tmpscal4(i,j,bi,bj)
+           HEFFMN(i,j,bi,bj)=tmpscal3(i,j,bi,bj)
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
+       _EXCH_XY_RL( HEFFMN,  myThid )
+       _EXCH_XY_RL( AREAMN,  myThid )
+      ENDDO
+CNH   End of concentration and thickness smoothening      
+
+      
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)

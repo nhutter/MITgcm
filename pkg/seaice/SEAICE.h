@@ -65,6 +65,7 @@ C                    for metric terms in U/V ice equations.
 
 C--   Dynamical variables
       COMMON/SEAICE_DYNVARS_1/AREA,HEFF,HSNOW,UICE,VICE
+     &                       ,AREAMN,HEFFMN
 #ifdef SEAICE_ITD
      &                       ,AREAITD,HEFFITD,HSNOWITD,
      &                        opnWtrFrac, fw2ObyRidge
@@ -80,6 +81,8 @@ C     fraction of open water (= 1-AREA) needed for ridging parameterization
       _RL HSNOW      (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL UICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
       _RL VICE       (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL AREAMN     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL HEFFMN     (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
 
 C     uIceC :: average of UICE between last two time steps
 C     vIceC :: average of VICE between last two time steps

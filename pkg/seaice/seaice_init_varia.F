@@ -63,6 +63,8 @@ C--   Initialise all variables in common blocks:
          DO i=1-OLx,sNx+OLx
           HEFF(i,j,bi,bj)=0. _d 0
           AREA(i,j,bi,bj)=0. _d 0
+          HEFFMN(i,j,bi,bj)=0. _d 0
+          AREAMN(i,j,bi,bj)=0. _d 0
 CToM<<<
 #ifdef SEAICE_ITD
           DO k=1,nITD
