@@ -62,6 +62,8 @@ C     == Local variables ==
 
        CALL DIAGNOSTICS_FILL( AREA, 'SIarea  ', 0, 1, 0, 1,1, myThid )
        CALL DIAGNOSTICS_FILL( HEFF, 'SIheff  ', 0, 1, 0, 1,1, myThid )
+       CALL DIAGNOSTICS_FILL( AREAmn, 'SIareamn', 0, 1, 0, 1,1, myThid )
+       CALL DIAGNOSTICS_FILL( HEFFmn, 'SIheffmn', 0, 1, 0, 1,1, myThid )
        CALL DIAGNOSTICS_FILL( UICE, 'SIuice  ', 0, 1, 0, 1,1, myThid )
        CALL DIAGNOSTICS_FILL( VICE, 'SIvice  ', 0, 1, 0, 1,1, myThid )
 

@@ -93,6 +93,14 @@ C=============== state variables ============
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       numAreaPreTh  = diagNum
 
+      diagName  = 'SIareamn'
+      diagTitle = 'SEAICE smooth fractional ice-covered area [0 to 1]'
+      diagUnits = 'm^2/m^2         '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+      numArea  = diagNum
+
       diagName  = 'SIheff  '
       diagTitle = 'SEAICE effective ice thickness'
       diagUnits = 'm               '
@@ -109,6 +117,14 @@ C=============== state variables ============
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
       numHeffPreTh  = diagNum
 
+      diagName  = 'SIheffmn'
+      diagTitle = 'SEAICE smoothened effective ice thickness'
+      diagUnits = 'm               '
+      diagCode  = 'SM      M1      '
+      CALL DIAGNOSTICS_ADDTOLIST( diagNum,
+     I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
+      numHeff  = diagNum
+      
       diagName  = 'SIhsnow '
       diagTitle = 'SEAICE effective snow thickness'
       diagUnits = 'm               '
