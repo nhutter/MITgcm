@@ -67,11 +67,11 @@ C     bi,bj  :: tile counters
       INTEGER i, j, bi, bj
       _RL phiSurf(1-OLx:sNx+OLx,1-OLy:sNy+OLy)
       _RL mask_uice, mask_vice
-      INTEGER l, m, n, lMin, lMax, mMin, mMax
-      INTEGER iMin, iMax, jMin, jMax
-      _RL tmpscal3 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL tmpscal4 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-      _RL tmpscal5
+C     INTEGER l, m, n, lMin, lMax, mMin, mMax
+      INTEGER iMin, iMax, jMin, jMax, n
+C      _RL tmpscal3 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL tmpscal4 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+C      _RL tmpscal5
 
 
 C Initialise local variables in common block
@@ -226,59 +226,131 @@ C     loop boundaries
       jMin=1-OLy
       jMax=sNy+OLy
 
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=jMin,jMax
+         DO i=iMin,iMax
+          AREAMN(i,j,bi,bj)=AREA(i,j,bi,bj)
+          HEFFMN(i,j,bi,bj)=HEFF(i,j,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
       
-      DO n=1,5
+      DO n=1,100
+c$$$       DO bj=myByLo(myThid),myByHi(myThid)
+c$$$        DO bi=myBxLo(myThid),myBxHi(myThid)
+c$$$         DO j=jMin,jMax
+c$$$          DO i=iMin,iMax
+c$$$           tmpscal3(i,j,bi,bj)=0. _d 0
+c$$$           tmpscal4(i,j,bi,bj)=0. _d 0
+c$$$           tmpscal5=0. _d 0
+c$$$           lMin=MAX(iMin-i,-4)
+c$$$           lMax=MIN(iMax-i,4)
+c$$$           mMin=MAX(jMin-j,-4)
+c$$$           mMax=MIN(jMax-j,4)
+c$$$C          print*,'loop parameters i',bi,bj,i,lMin,lMax,iMin,iMax
+c$$$C          print*,'loop parameters j',bi,bj,j,mMin,mMax,jMin,jMax
+c$$$           IF (AREA(i,j,bi,bj).GT.0) THEN
+c$$$            DO l=lMin,lMax
+c$$$             DO m=mMin,mMax
+c$$$              tmpscal3(i,j,bi,bj)=tmpscal3(i,j,bi,bj)+
+c$$$     &           HEFF(i+l,j+m,bi,bj)
+c$$$              tmpscal4(i,j,bi,bj)=tmpscal4(i,j,bi,bj)+
+c$$$     &           AREA(i+l,j+m,bi,bj)
+c$$$              tmpscal5=tmpscal5 + 1. _d 0
+c$$$C             IF (i.EQ.1) THEN
+c$$$C              IF (j.EQ.1) THEN
+c$$$C               print*,'seaice loop thickness',tmpscal3,
+c$$$C     &          HEFF(i+l,j+m,bi,bj),l,m
+c$$$C               print*,'seaice loop concentration',tmpscal4,
+c$$$C     &          AREA(i+l,j+m,bi,bj),l,m
+c$$$C              ENDIF
+c$$$C             ENDIF
+c$$$             ENDDO     
+c$$$            ENDDO
+c$$$            tmpscal3(i,j,bi,bj)=tmpscal3(i,j,bi,bj)/tmpscal5
+c$$$            tmpscal4(i,j,bi,bj)=tmpscal4(i,j,bi,bj)/tmpscal5
+c$$$            tmpscal3(i,j,bi,bj)=MAX(tmpscal3(i,j,bi,bj),HEFF(i,j,bi,bj))
+c$$$            tmpscal4(i,j,bi,bj)=MAX(tmpscal4(i,j,bi,bj),AREA(i,j,bi,bj))
+c$$$            IF (tmpscal4(i,j,bi,bj).GT.1) THEN
+c$$$             print*,'WARNING Averaging lead to area lager 1',i,j,
+c$$$     &            tmpscal4,tmpscal5
+c$$$            ENDIF
+c$$$           ENDIF
+c$$$          ENDDO
+c$$$         ENDDO
+c$$$        ENDDO
+c$$$       ENDDO
+c$$$
+c$$$       DO bj=myByLo(myThid),myByHi(myThid)
+c$$$        DO bi=myBxLo(myThid),myBxHi(myThid)
+c$$$         DO j=jMin,jMax
+c$$$          DO i=iMin,iMax
+c$$$           AREAMN(i,j,bi,bj)=tmpscal4(i,j,bi,bj)
+c$$$           HEFFMN(i,j,bi,bj)=tmpscal3(i,j,bi,bj)
+c$$$          ENDDO
+c$$$         ENDDO
+c$$$        ENDDO
+c$$$       ENDDO
+
        DO bj=myByLo(myThid),myByHi(myThid)
         DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-           tmpscal3(i,j,bi,bj)=0. _d 0
-           tmpscal4(i,j,bi,bj)=0. _d 0
-           tmpscal5=0. _d 0
-           lMin=MAX(iMin-i,-4)
-           lMax=MIN(iMax-i,4)
-           mMin=MAX(jMin-j,-4)
-           mMax=MIN(jMax-j,4)
-C         print*,'loop parameters i',bi,bj,i,lMin,lMax,iMin,iMax
-C         print*,'loop parameters j',bi,bj,j,mMin,mMax,jMin,jMax
-           DO l=lMin,lMax
-            DO m=mMin,mMax
-             tmpscal3(i,j,bi,bj)=tmpscal3(i,j,bi,bj)+HEFF(i+l,j+m,bi,bj)
-             tmpscal4(i,j,bi,bj)=tmpscal4(i,j,bi,bj)+AREA(i+l,j+m,bi,bj)
-             tmpscal5=tmpscal5 + 1. _d 0
-C           IF (i.EQ.1) THEN
-C            IF (j.EQ.1) THEN
-C             print*,'seaice loop thickness',tmpscal3,
-C     &          HEFF(i+l,j+m,bi,bj),l,m
-C             print*,'seaice loop concentration',tmpscal4,
-C     &          AREA(i+l,j+m,bi,bj),l,m
+         DO j=0,sNy
+          DO i=0,sNx
+           IF (AREA(i,j,bi,bj).GT.0) THEN
+            AREAMN(i,j,bi,bj)=0.16210282*AREAMN(i,j,bi,bj)+
+     &             0.09832033*(AREAMN(i-1,j,bi,bj)+AREAMN(i,j-1,bi,bj)+
+     &             AREAMN(i,j+1,bi,bj)+AREAMN(i+1,j,bi,bj))+
+     &             0.0596343*(AREAMN(i-1,j-1,bi,bj)+
+     &             AREAMN(i+1,j-1,bi,bj)+
+     &             AREAMN(i+1,j+1,bi,bj)+AREAMN(i-1,j-1,bi,bj))+
+     &             0.02193823*(AREAMN(i,j-2,bi,bj)+AREAMN(i+2,j,bi,bj)+
+     &             AREAMN(i,j+2,bi,bj)+AREAMN(i-2,j,bi,bj))+
+     &             0.00296902*(AREAMN(i-2,j-2,bi,bj)+
+     &             AREAMN(i+2,j-2,bi,bj)+
+     &             AREAMN(i-2,j+2,bi,bj)+AREAMN(i+2,j+2,bi,bj))+
+     &             0.01330621*(AREAMN(i-2,j-1,bi,bj)+
+     &             AREAMN(i-2,j+1,bi,bj)+
+     &             AREAMN(i+2,j+1,bi,bj)+AREAMN(i+2,j-1,bi,bj)+
+     &             AREAMN(i-1,j+2,bi,bj)+AREAMN(i+1,j+2,bi,bj)+
+     &             AREAMN(i-1,j-2,bi,bj)+AREAMN(i+1,j-2,bi,bj))            
+            HEFFMN(i,j,bi,bj)=0.16210282*HEFFMN(i,j,bi,bj)+
+     &             0.09832033*(HEFFMN(i-1,j,bi,bj)+HEFFMN(i,j-1,bi,bj)+
+     &             HEFFMN(i,j+1,bi,bj)+HEFFMN(i+1,j,bi,bj))+
+     &             0.0596343*(HEFFMN(i-1,j-1,bi,bj)+
+     &             HEFFMN(i+1,j-1,bi,bj)+
+     &             HEFFMN(i+1,j+1,bi,bj)+HEFFMN(i-1,j-1,bi,bj))+
+     &             0.02193823*(HEFFMN(i,j-2,bi,bj)+HEFFMN(i+2,j,bi,bj)+
+     &             HEFFMN(i,j+2,bi,bj)+HEFFMN(i-2,j,bi,bj))+
+     &             0.00296902*(HEFFMN(i-2,j-2,bi,bj)+
+     &             HEFFMN(i+2,j-2,bi,bj)+
+     &             HEFFMN(i-2,j+2,bi,bj)+HEFFMN(i+2,j+2,bi,bj))+
+     &             0.01330621*(HEFFMN(i-2,j-1,bi,bj)+
+     &             HEFFMN(i-2,j+1,bi,bj)+
+     &             HEFFMN(i+2,j+1,bi,bj)+HEFFMN(i+2,j-1,bi,bj)+
+     &             HEFFMN(i-1,j+2,bi,bj)+HEFFMN(i+1,j+2,bi,bj)+
+     &             HEFFMN(i-1,j-2,bi,bj)+HEFFMN(i+1,j-2,bi,bj))            
+C            HEFFMN(i,j,bi,bj)=0.5*HEFFMN(i,j,bi,bj)+0.5*
+C     &             MAX(HEFFMN(i,j,bi,bj),HEFF(i,j,bi,bj))
+C            AREAMN(i,j,bi,bj)=0.5*AREAMN(i,j,bi,bj)+0.5*
+C     &             MAX(AREAMN(i,j,bi,bj),AREA(i,j,bi,bj))
+C            AREAMN(i,j,bi,bj)=MIN(AREAMN(i,j,bi,bj),1.0)
+C            IF (AREAMN(i,j,bi,bj).GT.1) THEN
+C             print*,'WARNING Averaging lead to area lager 1',i,j,
+C     &            HEFFMN(i,j,bi,bj),AREAMN(i,j,bi,bj)
 C            ENDIF
-C           ENDIF
-            ENDDO     
-           ENDDO
-           tmpscal3(i,j,bi,bj)=tmpscal3(i,j,bi,bj)/tmpscal5
-           tmpscal4(i,j,bi,bj)=tmpscal4(i,j,bi,bj)/tmpscal5
-           tmpscal3(i,j,bi,bj)=MAX(tmpscal3(i,j,bi,bj),HEFF(i,j,bi,bj))
-           tmpscal4(i,j,bi,bj)=MAX(tmpscal4(i,j,bi,bj),AREA(i,j,bi,bj))
-           IF (tmpscal4(i,j,bi,bj).GT.1) THEN
-            print*,'WARNING Averaging lead to area lager 1',i,j,
-     &           tmpscal4,tmpscal5
+            IF (HEFFMN(i,j,bi,bj).GT.5.0) THEN
+             HEFFMN(i,j,bi,bj)=MAX(HEFFMN(i,j,bi,bj),HEFF(i,j,bi,bj))
+             AREAMN(i,j,bi,bj)=MAX(AREAMN(i,j,bi,bj),AREA(i,j,bi,bj))
+            ENDIF
+            AREAMN(i,j,bi,bj)=MIN(AREAMN(i,j,bi,bj),1.0)
            ENDIF
           ENDDO
          ENDDO
         ENDDO
        ENDDO
 
-       DO bj=myByLo(myThid),myByHi(myThid)
-        DO bi=myBxLo(myThid),myBxHi(myThid)
-         DO j=jMin,jMax
-          DO i=iMin,iMax
-           AREAMN(i,j,bi,bj)=tmpscal4(i,j,bi,bj)
-           HEFFMN(i,j,bi,bj)=tmpscal3(i,j,bi,bj)
-          ENDDO
-         ENDDO
-        ENDDO
-       ENDDO
 
        _EXCH_XY_RL( HEFFMN,  myThid )
        _EXCH_XY_RL( AREAMN,  myThid )
