@@ -69,9 +69,10 @@ C     bi,bj  :: tile counters
       _RL mask_uice, mask_vice
 C     INTEGER l, m, n, lMin, lMax, mMin, mMax
       INTEGER iMin, iMax, jMin, jMax, n
-C      _RL tmpscal3 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C      _RL tmpscal4 (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
-C      _RL tmpscal5
+      _RL tmparea (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL tmpheff (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL tmpmask (1-OLx:sNx+OLx,1-OLy:sNy+OLy,nSx,nSy)
+      _RL tmpwght
 
 
 C Initialise local variables in common block
@@ -232,12 +233,18 @@ C     loop boundaries
          DO i=iMin,iMax
           AREAMN(i,j,bi,bj)=AREA(i,j,bi,bj)
           HEFFMN(i,j,bi,bj)=HEFF(i,j,bi,bj)
+          tmparea(i,j,bi,bj)= 0.0
+          tmpheff(i,j,bi,bj)= 0.0
+          tmpmask(i,j,bi,bj)= 0.0
+          IF (AREA(i,j,bi,bj).GT.0) THEN
+           tmpmask(i,j,bi,bj) = 1.0
+          ENDIF
          ENDDO
         ENDDO
        ENDDO
       ENDDO
       
-      DO n=1,100
+      DO n=1,220
 c$$$       DO bj=myByLo(myThid),myByHi(myThid)
 c$$$        DO bi=myBxLo(myThid),myBxHi(myThid)
 c$$$         DO j=jMin,jMax
@@ -299,7 +306,23 @@ c$$$       ENDDO
          DO j=0,sNy
           DO i=0,sNx
            IF (AREA(i,j,bi,bj).GT.0) THEN
-            AREAMN(i,j,bi,bj)=0.16210282*AREAMN(i,j,bi,bj)+
+            tmpwght=0.16210282*tmpmask(i,j,bi,bj)+
+     &            0.09832033*(tmpmask(i-1,j,bi,bj)+tmpmask(i,j-1,bi,bj)+
+     &            tmpmask(i,j+1,bi,bj)+tmpmask(i+1,j,bi,bj))+
+     &            0.0596343*(tmpmask(i-1,j-1,bi,bj)+
+     &            tmpmask(i+1,j-1,bi,bj)+
+     &            tmpmask(i+1,j+1,bi,bj)+tmpmask(i-1,j-1,bi,bj))+
+     &            0.02193823*(tmpmask(i,j-2,bi,bj)+tmpmask(i+2,j,bi,bj)+
+     &            tmpmask(i,j+2,bi,bj)+tmpmask(i-2,j,bi,bj))+
+     &            0.00296902*(tmpmask(i-2,j-2,bi,bj)+
+     &            tmpmask(i+2,j-2,bi,bj)+
+     &            tmpmask(i-2,j+2,bi,bj)+tmpmask(i+2,j+2,bi,bj))+
+     &            0.01330621*(tmpmask(i-2,j-1,bi,bj)+
+     &            tmpmask(i-2,j+1,bi,bj)+
+     &            tmpmask(i+2,j+1,bi,bj)+tmpmask(i+2,j-1,bi,bj)+
+     &            tmpmask(i-1,j+2,bi,bj)+tmpmask(i+1,j+2,bi,bj)+
+     &            tmpmask(i-1,j-2,bi,bj)+tmpmask(i+1,j-2,bi,bj))  
+            tmparea(i,j,bi,bj)=0.16210282*AREAMN(i,j,bi,bj)+
      &             0.09832033*(AREAMN(i-1,j,bi,bj)+AREAMN(i,j-1,bi,bj)+
      &             AREAMN(i,j+1,bi,bj)+AREAMN(i+1,j,bi,bj))+
      &             0.0596343*(AREAMN(i-1,j-1,bi,bj)+
@@ -315,7 +338,7 @@ c$$$       ENDDO
      &             AREAMN(i+2,j+1,bi,bj)+AREAMN(i+2,j-1,bi,bj)+
      &             AREAMN(i-1,j+2,bi,bj)+AREAMN(i+1,j+2,bi,bj)+
      &             AREAMN(i-1,j-2,bi,bj)+AREAMN(i+1,j-2,bi,bj))            
-            HEFFMN(i,j,bi,bj)=0.16210282*HEFFMN(i,j,bi,bj)+
+            tmpheff(i,j,bi,bj)=0.16210282*HEFFMN(i,j,bi,bj)+
      &             0.09832033*(HEFFMN(i-1,j,bi,bj)+HEFFMN(i,j-1,bi,bj)+
      &             HEFFMN(i,j+1,bi,bj)+HEFFMN(i+1,j,bi,bj))+
      &             0.0596343*(HEFFMN(i-1,j-1,bi,bj)+
@@ -335,22 +358,35 @@ C            HEFFMN(i,j,bi,bj)=0.5*HEFFMN(i,j,bi,bj)+0.5*
 C     &             MAX(HEFFMN(i,j,bi,bj),HEFF(i,j,bi,bj))
 C            AREAMN(i,j,bi,bj)=0.5*AREAMN(i,j,bi,bj)+0.5*
 C     &             MAX(AREAMN(i,j,bi,bj),AREA(i,j,bi,bj))
-C            AREAMN(i,j,bi,bj)=MIN(AREAMN(i,j,bi,bj),1.0)
-C            IF (AREAMN(i,j,bi,bj).GT.1) THEN
-C             print*,'WARNING Averaging lead to area lager 1',i,j,
-C     &            HEFFMN(i,j,bi,bj),AREAMN(i,j,bi,bj)
+C     AREAMN(i,j,bi,bj)=MIN(AREAMN(i,j,bi,bj),1.0)
+            tmpheff(i,j,bi,bj)=tmpheff(i,j,bi,bj)/tmpwght
+            tmparea(i,j,bi,bj)=tmparea(i,j,bi,bj)/tmpwght
+C            IF ( (j.EQ.1) .AND. (i.EQ.1) ) THEN 
+CC            IF (tmparea(i,j,bi,bj).GT.1) THEN
+C             print*,tmparea(i,j,bi,bj),AREAMN(i,j,bi,bj),AREA(i,j,bi,bj)
+CC            ENDIF
 C            ENDIF
-            IF (HEFFMN(i,j,bi,bj).GT.5.0) THEN
-             HEFFMN(i,j,bi,bj)=MAX(HEFFMN(i,j,bi,bj),HEFF(i,j,bi,bj))
-             AREAMN(i,j,bi,bj)=MAX(AREAMN(i,j,bi,bj),AREA(i,j,bi,bj))
+            IF (tmpheff(i,j,bi,bj).GT.5.0) THEN
+             tmpheff(i,j,bi,bj)=MAX(tmpheff(i,j,bi,bj),HEFF(i,j,bi,bj))
+             tmparea(i,j,bi,bj)=MAX(tmparea(i,j,bi,bj),AREA(i,j,bi,bj))
             ENDIF
-            AREAMN(i,j,bi,bj)=MIN(AREAMN(i,j,bi,bj),1.0)
+            tmparea(i,j,bi,bj)=MIN(tmparea(i,j,bi,bj),1.0)
            ENDIF
           ENDDO
          ENDDO
         ENDDO
        ENDDO
 
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=0,sNy
+          DO i=0,sNx
+           AREAMN(i,j,bi,bj)=tmparea(i,j,bi,bj)
+           HEFFMN(i,j,bi,bj)=tmpheff(i,j,bi,bj)  
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
 
        _EXCH_XY_RL( HEFFMN,  myThid )
        _EXCH_XY_RL( AREAMN,  myThid )
