@@ -115,3 +115,5 @@ core
 
 /verification/*/tr_run.*
 
+/arctic_2km/**
+/arctic_18km/**
