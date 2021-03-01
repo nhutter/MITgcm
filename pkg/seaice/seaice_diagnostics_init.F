@@ -99,7 +99,6 @@ C=============== state variables ============
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-      numArea  = diagNum
 
       diagName  = 'SIheff  '
       diagTitle = 'SEAICE effective ice thickness'
@@ -123,7 +122,6 @@ C=============== state variables ============
       diagCode  = 'SM      M1      '
       CALL DIAGNOSTICS_ADDTOLIST( diagNum,
      I     diagName, diagCode, diagUnits, diagTitle, 0, myThid )
-      numHeff  = diagNum
       
       diagName  = 'SIhsnow '
       diagTitle = 'SEAICE effective snow thickness'
