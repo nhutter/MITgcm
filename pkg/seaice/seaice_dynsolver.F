@@ -248,21 +248,8 @@ C--   interface of dynamics with atmopheric forcing fields (wind/stress)
      I     myTime, myIter, myThid )
 
 
-C#define SMOOTH_AREAHEFF
-#define SMOOTH_PRESS0
-      DO bj=myByLo(myThid),myByHi(myThid)
-       DO bi=myBxLo(myThid),myBxHi(myThid)
-        DO j=1-Oly,sNy+Oly
-         DO i=1-Olx,sNx+Olx
-          AREAMN(i,j,bi,bj)=AREA(i,j,bi,bj)
-          HEFFMN(i,j,bi,bj)=HEFF(i,j,bi,bj)
-         ENDDO
-        ENDDO
-       ENDDO
-      ENDDO
-#ifdef SMOOTH_AREAHEFF
-CNH   Smoothening of concentration and thickness fields for the ice strenght computation
-C     loop boundaries
+#define SMOOTH_AREAHEFF
+C#define SMOOTH_PRESS0
       iMin=1-OLx
       iMax=sNx+OLx
       jMin=1-OLy
@@ -285,6 +272,9 @@ C     loop boundaries
        ENDDO
       ENDDO
 
+#ifdef SMOOTH_AREAHEFF
+CNH   Smoothening of concentration and thickness fields for the ice strenght computation
+C     loop boundaries
       DO n=1,220
 c$$$       DO bj=myByLo(myThid),myByHi(myThid)
 c$$$        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -346,7 +336,7 @@ c$$$       ENDDO
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=0,sNy
           DO i=0,sNx
-           IF (AREA(i,j,bi,bj).GT.0) THEN
+           IF (AREA(i,j,bi,bj).GT.0.85) THEN
             tmpwght=0.16210282*tmpmask(i,j,bi,bj)+
      &            0.09832033*(tmpmask(i-1,j,bi,bj)+tmpmask(i,j-1,bi,bj)+
      &            tmpmask(i,j+1,bi,bj)+tmpmask(i+1,j,bi,bj))+
