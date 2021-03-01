@@ -247,6 +247,20 @@ C--   interface of dynamics with atmopheric forcing fields (wind/stress)
      O     TAUX, TAUY,
      I     myTime, myIter, myThid )
 
+
+C#define SMOOTH_AREAHEFF
+#define SMOOTH_PRESS0
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          AREAMN(i,j,bi,bj)=AREA(i,j,bi,bj)
+          HEFFMN(i,j,bi,bj)=HEFF(i,j,bi,bj)
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+#ifdef SMOOTH_AREAHEFF
 CNH   Smoothening of concentration and thickness fields for the ice strenght computation
 C     loop boundaries
       iMin=1-OLx
@@ -270,7 +284,7 @@ C     loop boundaries
         ENDDO
        ENDDO
       ENDDO
-      
+
       DO n=1,220
 c$$$       DO bj=myByLo(myThid),myByHi(myThid)
 c$$$        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -301,7 +315,7 @@ c$$$C               print*,'seaice loop concentration',tmpscal4,
 c$$$C     &          AREA(i+l,j+m,bi,bj),l,m
 c$$$C              ENDIF
 c$$$C             ENDIF
-c$$$             ENDDO     
+c$$$             ENDDO
 c$$$            ENDDO
 c$$$            tmpscal3(i,j,bi,bj)=tmpscal3(i,j,bi,bj)/tmpscal5
 c$$$            tmpscal4(i,j,bi,bj)=tmpscal4(i,j,bi,bj)/tmpscal5
@@ -348,7 +362,7 @@ c$$$       ENDDO
      &            tmpmask(i-2,j+1,bi,bj)+
      &            tmpmask(i+2,j+1,bi,bj)+tmpmask(i+2,j-1,bi,bj)+
      &            tmpmask(i-1,j+2,bi,bj)+tmpmask(i+1,j+2,bi,bj)+
-     &            tmpmask(i-1,j-2,bi,bj)+tmpmask(i+1,j-2,bi,bj))  
+     &            tmpmask(i-1,j-2,bi,bj)+tmpmask(i+1,j-2,bi,bj))
             tmparea(i,j,bi,bj)=0.16210282*AREAMN(i,j,bi,bj)+
      &             0.09832033*(AREAMN(i-1,j,bi,bj)+AREAMN(i,j-1,bi,bj)+
      &             AREAMN(i,j+1,bi,bj)+AREAMN(i+1,j,bi,bj))+
@@ -388,7 +402,7 @@ C     &             MAX(AREAMN(i,j,bi,bj),AREA(i,j,bi,bj))
 C     AREAMN(i,j,bi,bj)=MIN(AREAMN(i,j,bi,bj),1.0)
             tmpheff(i,j,bi,bj)=tmpheff(i,j,bi,bj)/tmpwght
             tmparea(i,j,bi,bj)=tmparea(i,j,bi,bj)/tmpwght
-C            IF ( (j.EQ.1) .AND. (i.EQ.1) ) THEN 
+C            IF ( (j.EQ.1) .AND. (i.EQ.1) ) THEN
 CC            IF (tmparea(i,j,bi,bj).GT.1) THEN
 C             print*,tmparea(i,j,bi,bj),AREAMN(i,j,bi,bj),AREA(i,j,bi,bj)
 CC            ENDIF
@@ -409,7 +423,7 @@ C            ENDIF
          DO j=0,sNy
           DO i=0,sNx
            AREAMN(i,j,bi,bj)=tmparea(i,j,bi,bj)
-           HEFFMN(i,j,bi,bj)=tmpheff(i,j,bi,bj)  
+           HEFFMN(i,j,bi,bj)=tmpheff(i,j,bi,bj)
           ENDDO
          ENDDO
         ENDDO
@@ -418,9 +432,8 @@ C            ENDIF
        _EXCH_XY_RL( HEFFMN,  myThid )
        _EXCH_XY_RL( AREAMN,  myThid )
       ENDDO
-CNH   End of concentration and thickness smoothening      
-
-      
+CNH   End of concentration and thickness smoothening
+#endif /* SMOOTH_AREAHEFF */
 
       DO bj=myByLo(myThid),myByHi(myThid)
        DO bi=myBxLo(myThid),myBxHi(myThid)
@@ -488,6 +501,73 @@ C--   now add in tilt
 
        ENDDO
       ENDDO
+
+#ifdef SMOOTH_PRESS0
+CML   Smoothing of ice strength press0
+
+      DO bj=myByLo(myThid),myByHi(myThid)
+       DO bi=myBxLo(myThid),myBxHi(myThid)
+        DO j=1-Oly,sNy+Oly
+         DO i=1-Olx,sNx+Olx
+          tmparea(i,j,bi,bj)= 0.0
+          tmpmask(i,j,bi,bj)= 0.0
+          IF (AREA(i,j,bi,bj).GT.0) THEN
+           tmpmask(i,j,bi,bj) = 1.0
+          ENDIF
+         ENDDO
+        ENDDO
+       ENDDO
+      ENDDO
+
+      DO n=1,220
+       DO bj=myByLo(myThid),myByHi(myThid)
+        DO bi=myBxLo(myThid),myBxHi(myThid)
+         DO j=1,sNy
+          DO i=1,sNx
+           IF (AREA(i,j,bi,bj).GT.0) THEN
+            tmpwght=0.16210282*tmpmask(i,j,bi,bj)+
+     &           0.09832033*(tmpmask(i-1,j,bi,bj)+tmpmask(i,j-1,bi,bj)+
+     &           tmpmask(i,j+1,bi,bj)+tmpmask(i+1,j,bi,bj))+
+     &           0.0596343*(tmpmask(i-1,j-1,bi,bj)+
+     &           tmpmask(i+1,j-1,bi,bj)+
+     &           tmpmask(i+1,j+1,bi,bj)+tmpmask(i-1,j-1,bi,bj))+
+     &           0.02193823*(tmpmask(i,j-2,bi,bj)+tmpmask(i+2,j,bi,bj)+
+     &           tmpmask(i,j+2,bi,bj)+tmpmask(i-2,j,bi,bj))+
+     &           0.00296902*(tmpmask(i-2,j-2,bi,bj)+
+     &           tmpmask(i+2,j-2,bi,bj)+
+     &           tmpmask(i-2,j+2,bi,bj)+tmpmask(i+2,j+2,bi,bj))+
+     &           0.01330621*(tmpmask(i-2,j-1,bi,bj)+
+     &           tmpmask(i-2,j+1,bi,bj)+
+     &           tmpmask(i+2,j+1,bi,bj)+tmpmask(i+2,j-1,bi,bj)+
+     &           tmpmask(i-1,j+2,bi,bj)+tmpmask(i+1,j+2,bi,bj)+
+     &           tmpmask(i-1,j-2,bi,bj)+tmpmask(i+1,j-2,bi,bj))
+            tmparea(i,j,bi,bj)=0.16210282*PRESS0(i,j,bi,bj)+
+     &           0.09832033*(PRESS0(i-1,j,bi,bj)+PRESS0(i,j-1,bi,bj)+
+     &           PRESS0(i,j+1,bi,bj)+PRESS0(i+1,j,bi,bj))+
+     &           0.0596343*(PRESS0(i-1,j-1,bi,bj)+
+     &           PRESS0(i+1,j-1,bi,bj)+
+     &           PRESS0(i+1,j+1,bi,bj)+PRESS0(i-1,j-1,bi,bj))+
+     &           0.02193823*(PRESS0(i,j-2,bi,bj)+PRESS0(i+2,j,bi,bj)+
+     &           PRESS0(i,j+2,bi,bj)+PRESS0(i-2,j,bi,bj))+
+     &           0.00296902*(PRESS0(i-2,j-2,bi,bj)+
+     &           PRESS0(i+2,j-2,bi,bj)+
+     &           PRESS0(i-2,j+2,bi,bj)+PRESS0(i+2,j+2,bi,bj))+
+     &           0.01330621*(PRESS0(i-2,j-1,bi,bj)+
+     &           PRESS0(i-2,j+1,bi,bj)+
+     &           PRESS0(i+2,j+1,bi,bj)+PRESS0(i+2,j-1,bi,bj)+
+     &           PRESS0(i-1,j+2,bi,bj)+PRESS0(i+1,j+2,bi,bj)+
+     &           PRESS0(i-1,j-2,bi,bj)+PRESS0(i+1,j-2,bi,bj))
+            PRESS0(i,j,bi,bj)=tmparea(i,j,bi,bj)/tmpwght
+           ENDIF
+          ENDDO
+         ENDDO
+        ENDDO
+       ENDDO
+
+       _EXCH_XY_RL( PRESS0,  myThid )
+      ENDDO
+CML   End of smoothing ice strength press0
+#endif /* SMOOTH_PRESS0 */
 
 #ifdef SEAICE_ALLOW_DYNAMICS
       IF ( SEAICEuseDYNAMICS ) THEN
