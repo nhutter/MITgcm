@@ -408,8 +408,10 @@ C            ENDIF
         DO bi=myBxLo(myThid),myBxHi(myThid)
          DO j=0,sNy
           DO i=0,sNx
-           AREAMN(i,j,bi,bj)=tmparea(i,j,bi,bj)
-           HEFFMN(i,j,bi,bj)=tmpheff(i,j,bi,bj)  
+           AREAMN(i,j,bi,bj)=AREA(i,j,bi,bj)+(tmparea(i,j,bi,bj)-
+     &      AREA(i,j,bi,bj))/(1+exp(-tmparea(i,j,bi,bj)*100+85))
+           HEFFMN(i,j,bi,bj)=HEFF(i,j,bi,bj)+(tmpheff(i,j,bi,bj)-
+     &      HEFF(i,j,bi,bj))/(1+exp(-tmparea(i,j,bi,bj)*100+85))
           ENDDO
          ENDDO
         ENDDO
